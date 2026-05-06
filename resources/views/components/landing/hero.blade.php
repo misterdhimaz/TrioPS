@@ -28,12 +28,15 @@
 
                 <!-- Action Buttons -->
                 <div class="flex flex-wrap items-center gap-[20px] mb-[60px]">
-    <a href="{{ route('catalog.index') }}" class="flex items-center gap-2 bg-[#00e5ff] text-black px-[30px] py-[14px] rounded-[8px] text-[13px] font-bold tracking-[0.5px] uppercase shadow-[0_0_20px_rgba(0,229,255,0.4)] hover:bg-white hover:shadow-[0_0_30px_rgba(0,229,255,0.6)] hover:-translate-y-1 transition-all duration-300">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/>
-        </svg>
-        Sewa Konsol Sekarang
-    </a>
+<a href="{{ route('catalog.index') }}"
+   class="flex items-center gap-2 bg-[#00e5ff] text-black px-[30px] py-[14px] rounded-[8px] text-[13px] font-bold tracking-[0.5px] uppercase shadow-[0_0_20px_rgba(0,229,255,0.4)] hover:bg-white hover:shadow-[0_0_30px_rgba(0,229,255,0.6)] hover:-translate-y-1 transition-all duration-300">
+
+    <img src="{{ asset('images/icontombol.png') }}"
+         alt="icon"
+         class="w-7 h-7 object-contain">
+
+    Sewa Konsol Sekarang
+</a>
 
     <a href="#how-it-works" class="flex items-center gap-2 bg-[#111827]/60 backdrop-blur-sm border border-white/10 text-white px-[30px] py-[14px] rounded-[8px] text-[13px] font-semibold tracking-[0.5px] uppercase hover:border-[#00e5ff] hover:text-[#00e5ff] hover:-translate-y-1 transition-all duration-300">
         Cara Sewa

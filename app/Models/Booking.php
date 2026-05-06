@@ -13,12 +13,12 @@ class Booking extends Model
         'user_id',
         'playstation_id',
         'booking_date',
-        'start_time',     // Text/JSON: ["10:00", "11:00"]
-        'end_time',       // Dibiarkan jika masih ada di tabel
+        'start_time',
+        'end_time',
         'duration_hours', // Wajib ada
         'total_price',
-        'status',         // Pending, Active, Completed, Cancelled
-        'payment_proof'   // Path foto bukti transfer
+        'status',
+        'payment_proof'
     ];
 
     protected $casts = [

@@ -21,47 +21,62 @@ class PricingController extends Controller
 
     public function store(Request $request)
     {
+        // 1. Validasi semua kolom yang diminta database
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'subtitle' => 'required|string|max:255',
             'badge' => 'nullable|string|max:255',
             'price' => 'required|numeric|min:0',
             'duration_text' => 'required|string|max:255',
-            'features' => 'required|string', // Admin bisa menginput fitur dipisah koma atau enter
-            'color_theme' => 'required|string|max:255', // purple, cyan, amber
+            'color_theme' => 'required|in:purple,cyan,amber',
+            'description' => 'nullable|string',
+            'features' => 'required|string',
         ]);
 
+        // 2. Ubah text area 'features' menjadi array JSON agar formatnya aman
+        $featuresArray = array_filter(array_map('trim', explode("\n", $validated['features'])));
+        $validated['features'] = json_encode(array_values($featuresArray));
+
+        // 3. Simpan ke Database
         PricingPlan::create($validated);
 
-        return redirect()->route('pricing.index')->with('success', 'Paket harga berhasil ditambahkan!');
+        return redirect()->route('pricing.index')->with('success', 'Pricing Plan berhasil di-deploy ke sistem!');
     }
 
-    public function edit(PricingPlan $pricing)
+    public function edit($id)
     {
+        $pricing = PricingPlan::findOrFail($id);
         return view('admin.pricing.edit', compact('pricing'));
     }
 
-    public function update(Request $request, PricingPlan $pricing)
+    public function update(Request $request, $id)
     {
+        $pricing = PricingPlan::findOrFail($id);
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'subtitle' => 'required|string|max:255',
             'badge' => 'nullable|string|max:255',
             'price' => 'required|numeric|min:0',
             'duration_text' => 'required|string|max:255',
+            'color_theme' => 'required|in:purple,cyan,amber',
+            'description' => 'nullable|string',
             'features' => 'required|string',
-            'color_theme' => 'required|string|max:255',
         ]);
+
+        $featuresArray = array_filter(array_map('trim', explode("\n", $validated['features'])));
+        $validated['features'] = json_encode(array_values($featuresArray));
 
         $pricing->update($validated);
 
-        return redirect()->route('pricing.index')->with('success', 'Paket harga berhasil diperbarui!');
+        return redirect()->route('pricing.index')->with('success', 'Konfigurasi Pricing Plan berhasil diperbarui!');
     }
 
-    public function destroy(PricingPlan $pricing)
+    public function destroy($id)
     {
+        $pricing = PricingPlan::findOrFail($id);
         $pricing->delete();
 
-        return redirect()->route('pricing.index')->with('success', 'Paket harga berhasil dihapus!');
+        return redirect()->route('pricing.index')->with('success', 'Pricing Plan berhasil dihapus dari radar!');
     }
 }

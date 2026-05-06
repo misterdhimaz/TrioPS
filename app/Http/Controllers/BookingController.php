@@ -11,86 +11,113 @@ use Illuminate\Support\Facades\Storage;
 class BookingController extends Controller
 {
     /**
-     * Menyimpan data booking baru dari Landing Page.
+     * Menampilkan daftar booking di Dashboard User.
      */
-    // app/Http/Controllers/BookingController.php
+    public function index()
+    {
+        $activeBookings = Booking::with('playstation')
+            ->where('user_id', Auth::id())
+            ->latest()
+            ->get();
 
-public function update(Request $request, Booking $booking)
-{
-    // Cek: Hanya boleh edit jika status masih Pending
-    if ($booking->status !== 'Pending') {
-        return back()->with('error', 'Pesanan sudah di-ACC, tidak bisa diubah lagi.');
+        return view('dashboard', compact('activeBookings'));
     }
 
-    $request->validate([
-        'booking_date' => 'required|date',
-        'selected_times' => 'required',
-    ]);
-
-    $times = json_decode($request->selected_times);
-    $totalPrice = count($times) * $booking->playstation->price_per_hour;
-
-    $booking->update([
-        'booking_date' => $request->booking_date,
-        'start_time' => $request->selected_times,
-        'duration_hours' => count($times),
-        'total_price' => $totalPrice,
-    ]);
-
-    return back()->with('success', 'Jadwal berhasil diperbarui!');
-}
-
-// ... fungsi index() dan updateStatus() ...
-
-    public function destroy(Booking $booking)
+    /**
+     * Menyimpan data booking baru dari Katalog dengan Protokol Keamanan.
+     */
+    public function store(Request $request)
     {
-        // Hapus file gambar bukti transfer jika ada
-        if ($booking->payment_proof) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($booking->payment_proof);
+        // 1. Validasi Input (Pastikan add-ons masuk radar)
+        $request->validate([
+            'product_id'       => 'required|exists:products,id',
+            'booking_date'     => 'required|date|after_or_equal:today',
+            'selected_times'   => 'required',
+            'extra_controller' => 'nullable', // Menangkap checkbox controller
+            'gaming_headset'   => 'nullable',   // Menangkap checkbox headset
+        ]);
+
+        // 2. Olah Data Jam & Durasi
+        $requestedSlots = json_decode($request->selected_times, true);
+        if (empty($requestedSlots)) {
+            return back()->with('error', 'Silakan pilih minimal satu jam bermain.');
         }
 
-        // Hapus data dari database
-        $booking->delete();
+        // 3. PROTOKOL ANTI-DOUBLE BOOKING (Pengecekan Bentrok Jadwal)
+        // Mengecek apakah jam yang dipilih baru saja di-booking oleh orang lain
+        $existingBookings = Booking::where('playstation_id', $request->product_id)
+            ->where('booking_date', $request->booking_date)
+            ->whereIn('status', ['Approved', 'Active', 'Completed'])
+            ->get();
 
-        return back()->with('success', 'Transaksi #TRX-' . str_pad($booking->id, 4, '0', STR_PAD_LEFT) . ' berhasil dihapus permanen dari Radar!');
+        foreach ($existingBookings as $b) {
+            $bookedSlots = json_decode($b->start_time, true) ?? [];
+            $bentrok = array_intersect($requestedSlots, $bookedSlots);
+
+            if (count($bentrok) > 0) {
+                return back()->with('error', 'Peringatan: Ada slot jam yang baru saja diamankan oleh player lain. Silakan refresh dan pilih jam lain.');
+            }
+        }
+
+        // 4. Cari Data Konsol & Hitung Harga Dasar
+        $playstation = Product::findOrFail($request->product_id);
+        $duration = count($requestedSlots);
+
+        // Perhitungan Harga Dasar
+        $totalPrice = $duration * $playstation->price_per_hour;
+
+        // Tambahkan Add-ons jika dicentang
+        if ($request->has('extra_controller')) {
+            $totalPrice += 20000;
+        }
+        if ($request->has('gaming_headset')) {
+            $totalPrice += 25000;
+        }
+
+        // 5. Injeksi ke Database
+        Booking::create([
+            'user_id'        => Auth::id(),
+            'playstation_id' => $request->product_id,
+            'booking_date'   => $request->booking_date,
+            'start_time'     => $request->selected_times, // Tetap gunakan format JSON string
+            'duration_hours' => $duration,
+            'total_price'    => $totalPrice,
+            'status'         => 'Pending',
+        ]);
+
+        return redirect()->route('dashboard')->with('booking_success', 'Booking berhasil diamankan! Silakan upload bukti pembayaran.');
     }
 
+    /**
+     * Memperbarui jadwal pesanan.
+     */
+    public function update(Request $request, Booking $booking)
+    {
+        // Cek: Hanya boleh edit jika status masih Pending
+        if ($booking->status !== 'Pending') {
+            return back()->with('error', 'Pesanan sudah di-ACC, tidak bisa diubah lagi.');
+        }
 
-public function store(Request $request)
-{
-    // 1. Validasi Input
-    $request->validate([
-        'product_id'     => 'required|exists:playstations,id',
-        'booking_date'   => 'required|date',
-        'selected_times' => 'required',
-    ]);
+        $request->validate([
+            'booking_date' => 'required|date',
+            'selected_times' => 'required',
+        ]);
 
-    // 2. Olah Data Jam & Durasi
-    $times = json_decode($request->selected_times);
-    if (empty($times)) {
-        return back()->with('error', 'Silakan pilih minimal satu jam bermain.');
+        $times = json_decode($request->selected_times);
+        $totalPrice = count($times) * $booking->playstation->price_per_hour;
+
+        // Catatan: Jika saat edit Add-ons ingin dipertahankan, Anda bisa menambahkan ulang nominalnya di sini.
+        // Untuk sekarang, kita ikuti alur lama Anda (hanya update jam & harga dasar).
+
+        $booking->update([
+            'booking_date' => $request->booking_date,
+            'start_time' => $request->selected_times,
+            'duration_hours' => count($times),
+            'total_price' => $totalPrice,
+        ]);
+
+        return back()->with('success', 'Jadwal berhasil diperbarui!');
     }
-
-    // 3. Cari Data Konsol & Hitung Total Harga
-    $playstation = Product::findOrFail($request->product_id);
-    $duration    = count($times); // Variabel ini sudah ada
-    $totalPrice  = $duration * $playstation->price_per_hour;
-
-    // 4. Simpan ke Database
-    Booking::create([
-        'user_id'        => Auth::id(),
-        'playstation_id' => $request->product_id,
-        'booking_date'   => $request->booking_date,
-        'start_time'     => $request->selected_times,
-        'end_time'       => '-',
-        'duration_hours' => $duration, // TAMBAHKAN BARIS INI
-        'total_price'    => $totalPrice,
-        'status'         => 'Pending',
-    ]);
-
-    // 5. Redirect dengan Notifikasi
-    return redirect()->route('dashboard')->with('booking_success', 'Booking telah berhasil! Silakan lakukan pembayaran dan upload bukti transfer di dashboard Anda.');
-}
 
     /**
      * Mengunggah bukti pembayaran dari Dashboard User.
@@ -123,18 +150,18 @@ public function store(Request $request)
     }
 
     /**
-     * Menampilkan daftar booking (Opsional jika Anda butuh halaman khusus).
+     * Menghapus pesanan.
      */
-    public function index()
+    public function destroy(Booking $booking)
     {
-        $activeBookings = Booking::with('playstation')
-            ->where('user_id', Auth::id())
-            ->latest()
-            ->get();
+        // Hapus file gambar bukti transfer jika ada
+        if ($booking->payment_proof) {
+            Storage::disk('public')->delete($booking->payment_proof);
+        }
 
-        return view('dashboard', compact('activeBookings'));
+        // Hapus data dari database
+        $booking->delete();
+
+        return back()->with('success', 'Transaksi #TRX-' . str_pad($booking->id, 4, '0', STR_PAD_LEFT) . ' berhasil dihapus permanen dari Radar!');
     }
-
-
-
 }

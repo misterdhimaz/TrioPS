@@ -29,8 +29,7 @@
     <!-- Memanggil Komponen dari dalam folder 'components/landing' -->
     <x-landing.navbar />
     <x-landing.hero />
-
-    <x-landing.pricing />
+@include('components.landing.pricing', ['pricing_plans' => $pricing_plans])
     <x-landing.how-it-works />
     <x-landing.cta />
     <x-landing.footer />

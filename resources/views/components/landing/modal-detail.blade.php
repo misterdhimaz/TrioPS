@@ -169,14 +169,22 @@
                     <div class="space-y-2">
                         <label class="flex items-center justify-between p-3 rounded-xl bg-[#0B1221] border border-[#1A233A] cursor-pointer hover:border-[#00e5ff]/30 group transition-all">
                             <div class="flex items-center gap-3">
-                                <input type="checkbox" id="addon-controller-{{ $product->id }}" onchange="calculateTotal('{{ $product->id }}')" class="w-4 h-4 rounded border-[#1A233A] bg-[#03060D] text-[#00e5ff] focus:ring-[#00e5ff]">
+                                <input type="checkbox"
+       name="extra_controller"
+       value="1"
+       id="addon-controller-{{ $product->id }}"
+       onchange="calculateTotal('{{ $product->id }}')"class="w-4 h-4 rounded border-[#1A233A] bg-[#03060D] text-[#00e5ff] focus:ring-[#00e5ff]">
                                 <span class="text-white text-[12px] font-medium group-hover:text-[#00e5ff] transition-colors">Extra Controller</span>
                             </div>
                             <span class="text-[#00e5ff] text-[11px] font-bold">+20K</span>
                         </label>
                         <label class="flex items-center justify-between p-3 rounded-xl bg-[#0B1221] border border-[#1A233A] cursor-pointer hover:border-[#00e5ff]/30 group transition-all">
                             <div class="flex items-center gap-3">
-                                <input type="checkbox" id="addon-headset-{{ $product->id }}" onchange="calculateTotal('{{ $product->id }}')" class="w-4 h-4 rounded border-[#1A233A] bg-[#03060D] text-[#00e5ff] focus:ring-[#00e5ff]">
+                                <input type="checkbox"
+       name="gaming_headset"
+       value="1"
+       id="addon-headset-{{ $product->id }}"
+       onchange="calculateTotal('{{ $product->id }}')" class="w-4 h-4 rounded border-[#1A233A] bg-[#03060D] text-[#00e5ff] focus:ring-[#00e5ff]">
                                 <span class="text-white text-[12px] font-medium group-hover:text-[#00e5ff] transition-colors">Gaming Headset</span>
                             </div>
                             <span class="text-[#00e5ff] text-[11px] font-bold">+25K</span>

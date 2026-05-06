@@ -8,26 +8,11 @@
     <!-- Brand Identity -->
     <a href="/" class="flex items-center gap-4 group transition-transform duration-300 hover:scale-[1.02] w-fit">
         <!-- SVG Hexagon Gamepad Logo Custom with Gradient -->
-        <div class="flex items-center justify-center drop-shadow-[0_0_15px_rgba(0,229,255,0.6)] shrink-0 group-hover:drop-shadow-[0_0_25px_rgba(0,229,255,0.8)] transition-all">
-            <svg width="40" height="40" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="hexGradientFooter" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#00e5ff" />
-                        <stop offset="100%" stop-color="#0066ff" />
-                    </linearGradient>
-                </defs>
-                <!-- Hexagon Thick Border -->
-                <path d="M30 4L8 16.5V43.5L30 56L52 43.5V16.5L30 4Z" stroke="url(#hexGradientFooter)" stroke-width="5" stroke-linejoin="round"/>
-                <!-- White Gamepad Outline -->
-                <path d="M16 36C14 36 13 31 13 26C13 21 17 19 22 19H38C43 19 47 21 47 26C47 31 46 36 44 36C41 36 40 31 38 30H22C20 31 19 36 16 36Z" stroke="white" stroke-width="2.5" stroke-linejoin="round"/>
-                <!-- D-pad (Left) -->
-                <path d="M20 25H26M23 22V28" stroke="white" stroke-width="2" stroke-linecap="round"/>
-                <!-- Action Buttons (Right) -->
-                <circle cx="37" cy="23" r="1.5" fill="white"/>
-                <circle cx="41" cy="26" r="1.5" fill="white"/>
-                <circle cx="37" cy="29" r="1.5" fill="white"/>
-            </svg>
-        </div>
+        <div class="flex items-center justify-center shrink-0 transition-all">
+    <img src="{{ asset('images/logo.png') }}"
+         alt="Logo"
+         class="w-20 h-20 object-contain drop-shadow-[0_0_15px_rgba(0,229,255,0.6)] group-hover:drop-shadow-[0_0_25px_rgba(0,229,255,0.8)] transition-all">
+</div>
 
         <!-- Logo Text -->
         <div class="flex flex-col justify-center mt-0.5">

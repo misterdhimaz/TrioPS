@@ -9,23 +9,57 @@
 <div class="max-w-[1400px] mx-auto pb-12 print:p-0 print:m-0 print:max-w-full">
 
     <!-- HEADER SECTION (Hidden on Print) -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8 print:hidden">
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-10 print:hidden">
+
+        <!-- Left Side: Title & Badge -->
         <div>
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#10b981]/10 border border-[#10b981]/30 mb-3">
-
-
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#10b981]/10 border border-[#10b981]/30 mb-4 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+                <span class="text-[#10b981] text-[10px] font-black uppercase tracking-[2px]">Financial Protocol</span>
             </div>
-            <h1 class="text-3xl md:text-[36px] font-black text-white font-['Orbitron'] tracking-wide">
+
+            <h1 class="text-3xl md:text-[40px] font-black text-white font-['Orbitron'] tracking-tight leading-none">
                 LAPORAN <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#10b981] to-[#00e5ff]">KEUANGAN</span>
             </h1>
-            <p class="text-[#8A99B5] text-[13px] mt-1 font-['Inter']">Pantau omset masuk dan cetak laporan untuk rekapitulasi bisnis.</p>
+            <p class="text-[#8A99B5] text-sm mt-3 font-['Inter'] max-w-md leading-relaxed">
+                Pantau omset masuk dan cetak laporan untuk rekapitulasi bisnis Anda secara real-time.
+            </p>
         </div>
 
-        <button onclick="window.print()" class="flex items-center gap-2 bg-gradient-to-r from-[#10b981] to-[#00e5ff] text-black px-6 py-3 rounded-xl text-[12px] font-black uppercase tracking-[2px] hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-all transform hover:-translate-y-1">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-            Print Laporan
-        </button>
+        <!-- Right Side: Action Buttons Group -->
+        <div class="flex flex-wrap items-center gap-3">
+            <!-- Export Excel -->
+            <a href="{{ route('admin.reports.excel') }}"
+               class="flex items-center gap-2 bg-[#10b981]/10 border border-[#10b981]/50 text-[#10b981] px-5 py-3 rounded-xl font-bold text-[12px] uppercase tracking-[1px] hover:bg-[#10b981] hover:text-black transition-all duration-300">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+                Excel
+            </a>
+
+            <!-- Export PDF -->
+            <a href="{{ route('admin.reports.pdf') }}"
+               class="flex items-center gap-2 bg-[#ff3366]/10 border border-[#ff3366]/50 text-[#ff3366] px-5 py-3 rounded-xl font-bold text-[12px] uppercase tracking-[1px] hover:bg-[#ff3366] hover:text-white transition-all duration-300">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                PDF
+            </a>
+
+            <!-- Print Canvas -->
+            <button onclick="window.print()"
+                    class="flex items-center gap-2 bg-gradient-to-r from-[#10b981] to-[#00e5ff] text-black px-6 py-3 rounded-xl text-[12px] font-black uppercase tracking-[2px] shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)] transition-all transform hover:-translate-y-1">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                Print Laporan
+            </button>
+        </div>
     </div>
+
+    <!-- Kotak Konten Laporan Anda (Table, dsb) akan mulai di sini -->
+    <div class="print:border-0 print:shadow-none">
+        <!-- Letakkan table laporan Anda di sini -->
+    </div>
+
+</div>
 
     <!-- FILTER PANEL (Hidden on Print) -->
     <div class="bg-[#0B1221]/90 backdrop-blur-xl border border-[#1A233A] rounded-[24px] p-6 mb-8 print:hidden">
