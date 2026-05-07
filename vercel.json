@@ -49,4 +49,6 @@
         "VIEW_COMPILED_PATH": "/tmp/storage/framework/views",
         "DB_CONNECTION": "pgsql"
     }
+
+
 }
