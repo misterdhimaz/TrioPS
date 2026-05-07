@@ -3,7 +3,7 @@
     "builds": [
         {
             "src": "api/index.php",
-            "use": "vercel-php@0.6.2"
+            "use": "vercel-php@0.7.0"
         },
         {
             "src": "public/**",
@@ -46,6 +46,7 @@
         "APP_PACKAGES_CACHE": "/tmp/storage/framework/cache/packages.php",
         "APP_ROUTES_CACHE": "/tmp/storage/framework/cache/routes.php",
         "APP_SERVICES_CACHE": "/tmp/storage/framework/cache/services.php",
-        "VIEW_COMPILED_PATH": "/tmp/storage/framework/views"
+        "VIEW_COMPILED_PATH": "/tmp/storage/framework/views",
+        "DB_CONNECTION": "pgsql"
     }
 }
