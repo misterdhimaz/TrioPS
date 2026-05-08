@@ -3,16 +3,16 @@
 @section('title', 'Command Center - Admin')
 
 @section('content')
-<!-- Ambient Glow Background -->
 <div class="fixed top-0 right-0 w-[800px] h-[400px] bg-[#00e5ff]/5 blur-[120px] pointer-events-none -z-10"></div>
 
 <div class="max-w-[1400px] mx-auto pb-12">
 
-    <!-- HEADER SECTION -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
         <div>
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#00e5ff]/10 border border-[#00e5ff]/30 mb-3">
-                </div>
+                <span class="w-2 h-2 rounded-full bg-[#00e5ff] animate-pulse"></span>
+                <span class="text-[#00e5ff] text-[10px] font-bold tracking-[2px] uppercase">Live System</span>
+            </div>
             <h1 class="text-3xl md:text-[36px] font-black text-white font-['Orbitron'] tracking-wide">
                 TRANSACTION <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#00e5ff] to-[#0066ff]">RADAR</span>
             </h1>
@@ -20,7 +20,6 @@
         </div>
     </div>
 
-    <!-- QUICK STATS WIDGET (Menggunakan $allBookings agar tidak berubah saat filter) -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <div class="bg-[#0B1221]/80 backdrop-blur-md border border-[#1A233A] p-5 rounded-2xl flex items-center justify-between group hover:border-[#00e5ff]/30 transition-colors">
             <div>
@@ -70,7 +69,6 @@
         </div>
     </div>
 
-    <!-- GLOBAL ALERTS -->
     @if(session('success'))
     <div class="bg-[#10b981]/10 border border-[#10b981]/30 text-[#10b981] p-4 rounded-xl mb-6 text-[13px] font-bold flex items-center gap-3">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -78,7 +76,6 @@
     </div>
     @endif
 
-    <!-- FILTER TABS SYSTEM -->
     <div class="flex flex-wrap items-center gap-2 mb-6">
         <a href="{{ route('admin.bookings.index') }}"
            class="px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-[1px] transition-all {{ $currentFilter == 'All' ? 'bg-[#00e5ff] text-black shadow-[0_0_15px_rgba(0,229,255,0.3)]' : 'bg-[#0B1221] border border-[#1A233A] text-[#8A99B5] hover:border-[#00e5ff]/50 hover:text-white' }}">
@@ -98,9 +95,8 @@
         </a>
     </div>
 
-    <!-- MAIN DATA TABLE -->
     <div class="bg-[#0B1221]/90 backdrop-blur-xl border border-[#1A233A] rounded-[24px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.3)] relative">
-        <!-- Overlay jika sedang loading (opsional, untuk kosmetik) -->
+
         <div class="absolute inset-0 bg-[#0B1221]/50 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity" id="table-loader">
             <div class="w-8 h-8 border-2 border-[#00e5ff] border-t-transparent rounded-full animate-spin"></div>
         </div>
@@ -120,7 +116,6 @@
                     @forelse($bookings as $item)
                     <tr class="border-b border-[#1A233A]/40 hover:bg-[#1A233A]/20 transition-colors group">
 
-                        <!-- 1. Order ID & Date -->
                         <td class="px-6 py-5">
                             <div class="font-['Orbitron'] text-[#00e5ff] font-bold text-[14px] group-hover:drop-shadow-[0_0_8px_rgba(0,229,255,0.5)] transition-all">#TRX-{{ str_pad($item->id, 4, '0', STR_PAD_LEFT) }}</div>
                             <div class="text-[#8A99B5] text-[10px] mt-1.5 flex items-center gap-1.5">
@@ -129,7 +124,6 @@
                             </div>
                         </td>
 
-                        <!-- 2. Pelanggan -->
                         <td class="px-6 py-5">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-full bg-[#1A233A] flex items-center justify-center text-[#8A99B5] font-bold text-[11px] uppercase">
@@ -142,7 +136,6 @@
                             </div>
                         </td>
 
-                        <!-- 3. Konsol & Jam -->
                         <td class="px-6 py-5">
                             <div class="font-bold text-[14px] mb-1.5 text-white">{{ $item->playstation->name ?? 'Unit Dihapus' }}</div>
                             <div class="flex items-center gap-2 mb-2">
@@ -157,24 +150,30 @@
                             </div>
                         </td>
 
-                        <!-- 4. Bukti Bayar -->
                         <td class="px-6 py-5 text-center">
                             @if($item->payment_proof)
-                                <a href="{{ asset('storage/' . $item->payment_proof) }}" target="_blank" class="inline-flex items-center gap-2 px-3 py-2 bg-[#00e5ff]/10 text-[#00e5ff] border border-[#00e5ff]/30 rounded-lg text-[10px] font-bold uppercase tracking-[1px] hover:bg-[#00e5ff] hover:text-black hover:shadow-[0_0_15px_rgba(0,229,255,0.4)] transition-all">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
-                                    Lihat Struk
-                                </a>
+                                <button type="button" onclick="openModal('modal-bukti-{{ $item->id }}')" class="inline-flex items-center gap-2 px-3 py-2 bg-[#00e5ff]/10 text-[#00e5ff] border border-[#00e5ff]/30 rounded-lg text-[10px] font-bold uppercase tracking-[1px] hover:bg-[#00e5ff] hover:text-black hover:shadow-[0_0_15px_rgba(0,229,255,0.4)] transition-all">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                                    Bukti Transfer
+                                </button>
                             @else
                                 <span class="inline-flex items-center gap-1.5 px-3 py-2 bg-[#03060D] border border-[#1A233A] text-[#8A99B5]/50 rounded-lg text-[10px] uppercase font-bold tracking-[1px]">
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                                     Waiting
                                 </span>
                             @endif
-                        </td>
+                         </td>
 
-                        <!-- 5. Aksi Status & Delete -->
-                        <td class="px-6 py-5">
+                         <td class="px-6 py-5">
                             <div class="flex items-center justify-end gap-2">
+
+                                @if(in_array(strtolower($item->status), ['active', 'completed']))
+                                    <button type="button" onclick="openModal('modal-nota-{{ $item->id }}')" title="Preview & Cetak Nota"
+                                       class="inline-flex items-center gap-1.5 px-3 py-2 bg-[#10b981]/10 hover:bg-[#10b981] border border-[#10b981]/30 text-[#10b981] hover:text-black rounded-lg text-[10px] font-bold uppercase tracking-[1px] transition-all shadow-[0_0_10px_rgba(16,185,129,0.2)]">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                        Cetak Nota
+                                    </button>
+                                @endif
 
                                 <form action="{{ route('admin.bookings.status', $item->id) }}" method="POST" class="flex items-center gap-2">
                                     @csrf @method('PATCH')
@@ -218,7 +217,6 @@
                         </td>
                     </tr>
                     @empty
-                    <!-- EMPTY STATE SCIFI DESIGN -->
                     <tr>
                         <td colspan="5" class="px-6 py-20 text-center">
                             <div class="flex flex-col items-center justify-center">
@@ -242,4 +240,120 @@
         </div>
     </div>
 </div>
+
+@foreach($bookings as $item)
+
+    @if($item->payment_proof)
+    <div id="modal-bukti-{{ $item->id }}" class="fixed inset-0 w-screen h-screen z-[99999] hidden items-center justify-center bg-[#03050A]/90 backdrop-blur-md">
+        <div class="bg-[#0B1221] border border-[#00e5ff]/30 rounded-2xl p-6 max-w-lg w-full mx-4 shadow-[0_0_50px_rgba(0,229,255,0.2)] relative">
+            <button type="button" onclick="closeModal('modal-bukti-{{ $item->id }}')" class="absolute top-4 right-4 p-2 text-[#8A99B5] hover:text-[#ff3366] hover:bg-[#ff3366]/10 rounded-lg transition-colors z-50">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+            <h3 class="text-[#00e5ff] font-['Orbitron'] font-bold text-lg mb-4 flex items-center gap-2">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                BUKTI - #TRX-{{ str_pad($item->id, 4, '0', STR_PAD_LEFT) }}
+            </h3>
+            <div class="rounded-xl overflow-hidden border border-[#1A233A] bg-black flex justify-center items-center min-h-[300px]">
+                <img src="{{ asset('storage/' . $item->payment_proof) }}" alt="Bukti" class="w-full max-h-[70vh] object-contain">
+            </div>
+        </div>
+    </div>
+    @endif
+
+    @if(in_array(strtolower($item->status), ['active', 'completed']))
+    <div id="modal-nota-{{ $item->id }}" class="fixed inset-0 w-screen h-screen z-[99999] hidden items-center justify-center bg-[#03050A]/90 backdrop-blur-md">
+        <div class="bg-[#0B1221] border border-[#00e5ff]/50 rounded-2xl w-full max-w-md mx-4 shadow-[0_0_50px_rgba(0,229,255,0.2)] flex flex-col relative overflow-hidden">
+
+            <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#00e5ff] to-transparent"></div>
+
+            <div class="flex items-center justify-between p-5 border-b border-[#1A233A] bg-[#03060D]">
+                <h3 class="text-[#00e5ff] font-['Orbitron'] font-bold text-[15px] tracking-[2px] uppercase w-full text-center">
+                    PREVIEW NOTA #TRX-{{ str_pad($item->id, 4, '0', STR_PAD_LEFT) }}
+                </h3>
+                <button type="button" onclick="closeModal('modal-nota-{{ $item->id }}')" class="absolute right-4 text-[#8A99B5] hover:text-[#ff3366] transition-colors p-2 rounded-lg bg-[#1A233A]/50">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+
+            @php
+                $waktuSewaModal = json_decode($item->start_time, true) ?? [];
+                $durasiModal = $item->duration ?? count($waktuSewaModal);
+            @endphp
+            <div class="p-6">
+                <div class="border border-[#10b981]/30 bg-[#0B1221] rounded-xl p-6 relative overflow-hidden shadow-[inset_0_0_20px_rgba(16,185,129,0.05)]">
+                    <div class="flex justify-between items-center mb-6 border-b border-[#1A233A] pb-4">
+                        <div class="text-[#8A99B5] text-xs uppercase tracking-widest font-bold">Layanan</div>
+                        <div class="text-white font-bold text-sm text-right">Sewa {{ $item->playstation->name ?? 'PS' }} ({{ $durasiModal }} Jam)</div>
+                    </div>
+                    <div class="bg-[#1A233A]/30 rounded-lg p-5 flex justify-between items-center border border-[#1A233A]">
+                        <div class="text-white font-bold tracking-widest uppercase text-xs">TOTAL<br>KESELURUHAN</div>
+                        <div class="text-[#00e5ff] font-['Orbitron'] font-bold text-3xl">Rp {{ number_format($item->total_price, 0, ',', '.') }}</div>
+                    </div>
+                    <div class="mt-8 text-right text-[#8A99B5] text-xs">
+                        Tanda Terima Admin, <span class="text-white font-bold ml-1">Trio Infinity</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-5 border-t border-[#1A233A] bg-[#03060D] flex justify-center gap-4">
+<button type="button" onclick="printReceiptSilent('{{ route('booking.receipt', $item->id) }}'); closeModal('modal-nota-{{ $item->id }}')" class="px-6 py-3 bg-gradient-to-r from-[#00e5ff] to-[#0066ff] hover:scale-105 text-white rounded-lg text-xs font-bold uppercase tracking-[1px] transition-all shadow-[0_0_15px_rgba(0,229,255,0.4)] flex items-center gap-2">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+    CETAK NOTA ASLI
+</button>
+            </div>
+        </div>
+    </div>
+    @endif
+
+@endforeach
+
+<script>
+    function openModal(id) {
+        const modal = document.getElementById(id);
+        if(modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeModal(id) {
+        const modal = document.getElementById(id);
+        if(modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    window.onclick = function(event) {
+        if (event.target.classList.contains('fixed') && event.target.classList.contains('inset-0')) {
+            event.target.classList.add('hidden');
+            event.target.classList.remove('flex');
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    function printReceiptSilent(url) {
+        // 1. Buat elemen iframe rahasia (tidak terlihat di layar)
+        let printFrame = document.createElement('iframe');
+        printFrame.style.display = 'none';
+        printFrame.src = url;
+
+        // 2. Tempelkan ke dalam halaman dashboard
+        document.body.appendChild(printFrame);
+
+        // 3. Begitu file nota selesai di-load di latar belakang, langsung tembak jendela Print!
+        printFrame.onload = function() {
+            printFrame.contentWindow.focus();
+            printFrame.contentWindow.print();
+
+            // 4. Bersihkan iframe setelah selesai agar tidak menumpuk di memori
+            setTimeout(() => {
+                document.body.removeChild(printFrame);
+            }, 2000);
+        };
+}
+
+</script>
 @endsection

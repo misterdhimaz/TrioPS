@@ -164,4 +164,24 @@ class BookingController extends Controller
 
         return back()->with('success', 'Transaksi #TRX-' . str_pad($booking->id, 4, '0', STR_PAD_LEFT) . ' berhasil dihapus permanen dari Radar!');
     }
+
+  public function receipt(Booking $booking)
+{
+    // 1. Keamanan: Cek apakah yang akses adalah Admin atau User pemilik pesanan
+    if (auth()->user()->is_admin !== 1 && auth()->id() !== $booking->user_id) {
+        abort(403, 'Akses Ditolak: Anda tidak memiliki izin melihat nota ini.');
+    }
+
+    // 2. Validasi Status: Gunakan strtolower() agar kebal terhadap perbedaan huruf besar/kecil
+    if (!in_array(strtolower($booking->status), ['active', 'completed'])) {
+        abort(404, 'Nota Belum Tersedia: Transaksi ini belum di-ACC oleh Admin.');
+    }
+
+    // Muat relasi yang diperlukan untuk ditampilkan di nota
+    $booking->load(['user', 'playstation']);
+
+    return view('pages.receipt', compact('booking'));
+}
+
+
 }
