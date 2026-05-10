@@ -28,7 +28,7 @@ Route::get('/about', function () {
 
 // 2. AREA PENGGUNA TERDAFTAR (Dashboard & Fitur Member)
 // Rute di sini bisa diakses oleh USER maupun ADMIN yang sudah login
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', \App\Http\Middleware\AutoUpdateBookingStatus::class])->group(function () {
 
     // Halaman Dashboard Member (User Biasa)
     Route::get('/dashboard', function () {
@@ -60,6 +60,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // RUTE NOTA TRANSAKSI (Bisa diakses User & Admin)
     // ==========================================
     Route::get('/booking/{booking}/receipt', [BookingController::class, 'receipt'])->name('booking.receipt');
+    Route::get('/vip/{id}/receipt', [App\Http\Controllers\PlanSubscriptionController::class, 'vipReceipt'])->name('vip.receipt');
 
     // Manajemen Profil (Breeze Default)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -68,7 +69,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // 3. AREA KHUSUS ADMIN (Prefix: admin)
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+Route::middleware(['auth', 'admin', \App\Http\Middleware\AutoUpdateBookingStatus::class])->prefix('admin')->group(function () {
 
     // Dashboard Utama Admin
     Route::get('/dashboard', function () {
@@ -131,6 +132,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports.index');
     Route::get('/reports/pdf', [ReportController::class, 'exportPdf'])->name('admin.reports.pdf');
     Route::get('/reports/excel', [ReportController::class, 'exportExcel'])->name('admin.reports.excel');
+
+    // Manajemen Status & Hapus VIP (Untuk Dashboard Admin)
+    Route::patch('/vip-subscriptions/{id}/status', [App\Http\Controllers\Admin\BookingController::class, 'updateVipStatus'])->name('admin.vip.status');
+    Route::delete('/vip-subscriptions/{id}', [App\Http\Controllers\Admin\BookingController::class, 'destroyVip'])->name('admin.vip.destroy');
 });
 
 // 4. AUTHENTICATION ROUTES (Login, Register, dsb)

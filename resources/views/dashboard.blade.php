@@ -2,12 +2,10 @@
 @section('title', 'Trio.InfinityPS')
 
 @section('content')
-<!-- Ambient Glow Background -->
 <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[400px] bg-[#00e5ff]/5 blur-[150px] pointer-events-none -z-10"></div>
 
 <div class="max-w-[1200px] mx-auto pb-20">
 
-    <!-- HEADER SECTION -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10 border-b border-[#1A233A] pb-8 relative">
         <div class="relative z-10">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#00e5ff]/10 border border-[#00e5ff]/30 mb-4">
@@ -20,7 +18,6 @@
             <p class="text-[#8A99B5] text-sm mt-2 font-['Inter']">Welcome back, <span class="text-white font-bold">{{ Auth::user()->name }}</span>. Here is your gaming telemetry.</p>
         </div>
 
-        <!-- Quick Stats Badge -->
         <div class="bg-[#03060D] border border-[#1A233A] px-5 py-3 rounded-2xl flex items-center gap-4 relative z-10 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
             <div class="text-right">
                 <div class="text-[#8A99B5] text-[10px] uppercase tracking-[1px] font-bold">Total Transaksi</div>
@@ -32,7 +29,6 @@
         </div>
     </div>
 
-    <!-- GLOBAL ALERTS -->
     @if(session('success') || session('booking_success'))
     <div class="bg-[#10b981]/10 border border-[#10b981]/30 text-[#10b981] p-4 rounded-2xl mb-8 text-[13px] font-bold flex items-center gap-3 backdrop-blur-sm animate-[slideDown_0.3s_ease-out]">
         <div class="bg-[#10b981]/20 p-1.5 rounded-lg"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
@@ -47,7 +43,6 @@
     </div>
     @endif
 
-    <!-- MAIN CONTENT GRID -->
     <div class="flex items-center gap-3 mb-6">
         <div class="w-1.5 h-6 bg-[#00e5ff] rounded-full shadow-[0_0_10px_#00e5ff]"></div>
         <h2 class="font-['Orbitron'] text-[20px] font-bold text-white tracking-[1px]">ACTIVE SESSIONS</h2>
@@ -57,7 +52,6 @@
         @forelse($activeBookings as $booking)
             <div class="bg-[#0B1221]/80 backdrop-blur-md border border-[#1A233A] p-5 md:p-6 rounded-[24px] flex flex-col xl:flex-row items-center justify-between gap-6 hover:border-[#00e5ff]/40 hover:shadow-[0_8px_30px_rgba(0,0,0,0.5)] transition-all duration-300 group">
 
-                <!-- 1. Console Identity -->
                 <div class="flex items-center gap-5 w-full xl:w-auto xl:flex-1">
                     <div class="w-20 h-20 bg-[#03060D] border border-[#1A233A] rounded-2xl p-2 shrink-0 flex items-center justify-center relative overflow-hidden group-hover:border-[#00e5ff]/30 transition-colors">
                         <div class="absolute inset-0 bg-[#00e5ff]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -77,7 +71,6 @@
                     </div>
                 </div>
 
-                <!-- 2. Time Slots Grid -->
                 <div class="flex flex-wrap items-center justify-start xl:justify-center gap-2 w-full xl:w-auto xl:flex-1 bg-[#03060D] p-3 rounded-2xl border border-[#1A233A]">
                     <div class="w-full text-[9px] text-[#8A99B5] uppercase tracking-[1px] font-bold mb-1 pl-1">Slot Jadwal:</div>
                     <div class="flex flex-wrap gap-2 w-full">
@@ -93,7 +86,6 @@
                     </div>
                 </div>
 
-                <!-- 3. Actions & Price -->
                 <div class="flex flex-row xl:flex-col items-center justify-between xl:items-end xl:justify-center w-full xl:w-auto gap-4 xl:gap-2">
                     <div class="text-white font-['Orbitron'] font-black text-[20px] md:text-[24px]">
                         Rp {{ number_format($booking->total_price, 0, ',', '.') }}
@@ -104,8 +96,6 @@
                             $jamMulai = $jamArray[0] ?? '00:00';
                             $tanggalSaja = \Carbon\Carbon::parse($booking->booking_date)->toDateString();
                             $waktuMain = \Carbon\Carbon::parse($tanggalSaja . ' ' . $jamMulai);
-
-                            // Menggunakan timezone Jakarta agar akurat
                             $sudahMulai = now('Asia/Jakarta')->greaterThanOrEqualTo($waktuMain);
                             $status = strtolower($booking->status);
                         @endphp
@@ -130,22 +120,32 @@
                                 </button>
                             </form>
 
-                        {{-- STATUS: APPROVED / ACTIVE --}}
-                        @elseif($status == 'approved' || $status == 'active')
-                            @if(!$sudahMulai)
-                                <span class="px-5 py-2.5 bg-[#00e5ff]/10 text-[#00e5ff] border border-[#00e5ff]/30 rounded-xl text-[10px] font-bold uppercase tracking-[1px] flex items-center gap-2">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                    ACC (Siap Main)
-                                </span>
+                        {{-- STATUS: APPROVED / ACTIVE / COMPLETED --}}
+                        @elseif(in_array($status, ['approved', 'active', 'completed']))
+
+                            @if($status == 'completed')
+                                <span class="px-4 py-2.5 bg-[#1A233A] text-[#8A99B5] rounded-xl text-[10px] font-bold uppercase tracking-[1px]">Completed</span>
                             @else
-                                <span class="px-5 py-2.5 bg-[#10b981]/10 text-[#10b981] border border-[#10b981]/30 rounded-xl text-[10px] font-bold uppercase tracking-[1px] flex items-center gap-2">
-                                    <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10b981] opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-[#10b981]"></span></span>
-                                    Sedang Bermain
-                                </span>
+                                @if(!$sudahMulai)
+                                    <span class="px-4 py-2.5 bg-[#00e5ff]/10 text-[#00e5ff] border border-[#00e5ff]/30 rounded-xl text-[10px] font-bold uppercase tracking-[1px] flex items-center gap-1.5">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                        ACC (Siap Main)
+                                    </span>
+                                @else
+                                    <span class="px-4 py-2.5 bg-[#10b981]/10 text-[#10b981] border border-[#10b981]/30 rounded-xl text-[10px] font-bold uppercase tracking-[1px] flex items-center gap-1.5">
+                                        <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10b981] opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-[#10b981]"></span></span>
+                                        Sedang Bermain
+                                    </span>
+                                @endif
                             @endif
 
-                        @elseif($status == 'completed')
-                            <span class="px-5 py-2.5 bg-[#1A233A] text-[#8A99B5] rounded-xl text-[10px] font-bold uppercase tracking-[1px]">Completed</span>
+                          <button type="button" onclick="printReceiptSilent('{{ route('booking.receipt', $booking->id) }}')"
+   class="px-4 py-2.5 bg-gradient-to-r from-[#00e5ff] to-[#0066ff] hover:scale-105 text-white rounded-xl text-[10px] font-bold uppercase tracking-[1px] transition-all shadow-[0_0_15px_rgba(0,229,255,0.4)] flex items-center gap-2">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+    Cetak Nota
+</button>
+
+                        {{-- STATUS: CANCELLED --}}
                         @else
                             <span class="px-5 py-2.5 bg-[#ff3366]/10 text-[#ff3366] border border-[#ff3366]/30 rounded-xl text-[10px] font-bold uppercase tracking-[1px]">Cancelled</span>
                         @endif
@@ -153,7 +153,6 @@
                 </div>
             </div>
 
-            <!-- MODAL UPLOAD BUKTI -->
             @if(strtolower($booking->status) == 'pending' && !$booking->payment_proof)
             <div id="pay-modal-{{ $booking->id }}" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-[#03050a]/90 backdrop-blur-md p-4 transition-opacity">
                 <div class="bg-[#0B1221] border border-[#1A233A] p-8 rounded-[32px] w-full max-w-md relative shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden">
@@ -195,11 +194,10 @@
                                 </div>
                             </div>
 
-                            <!-- Penambahan Pesan Error Validation -->
                             @error('payment_proof')
                                 <p class="text-[#ff3366] text-[10px] font-bold mb-4 flex items-center gap-1"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> {{ $message }}</p>
                             @enderror
-                            <div class="mb-6"></div> <!-- Spacer jika tidak ada error -->
+                            <div class="mb-6"></div>
 
                             <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#00e5ff] to-[#0066ff] text-black text-[12px] font-black uppercase tracking-[2px] hover:shadow-[0_0_25px_rgba(0,229,255,0.4)] transition-all">
                                 Kirim Bukti Pembayaran
@@ -211,7 +209,6 @@
             @endif
 
         @empty
-            <!-- EMPTY STATE SCIFI DESIGN -->
             <div class="py-24 flex flex-col items-center justify-center bg-[#0B1221]/50 border border-[#1A233A] border-dashed rounded-[32px] text-center relative overflow-hidden w-full">
                 <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-[#00e5ff]/5 blur-[80px] rounded-full pointer-events-none"></div>
                 <div class="w-24 h-24 mb-6 relative z-10">
@@ -230,7 +227,6 @@
         @endforelse
     </div>
 
-    <!-- VIP SUBSCRIPTION GRID -->
     <div class="flex items-center gap-3 mb-6 mt-16">
         <div class="w-1.5 h-6 bg-[#f59e0b] rounded-full shadow-[0_0_10px_#f59e0b]"></div>
         <h2 class="font-['Orbitron'] text-[20px] font-bold text-white tracking-[1px]">VIP PLAN RADAR</h2>
@@ -240,7 +236,6 @@
         @forelse($vipSubscriptions as $vip)
             <div class="bg-gradient-to-r from-[#0B1221] to-[#1A233A]/50 border {{ $vip->status == 'Pending' ? 'border-[#f59e0b]/50' : 'border-[#1A233A]' }} p-5 md:p-6 rounded-[24px] flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
 
-                <!-- Dekorasi -->
                 <div class="absolute -right-10 -top-10 w-32 h-32 bg-[#f59e0b]/10 blur-[40px] rounded-full"></div>
 
                 <div class="flex-1 relative z-10 w-full">
@@ -276,7 +271,6 @@
                 </div>
             </div>
 
-            <!-- MODAL UPLOAD BUKTI VIP -->
             @if(strtolower($vip->status) == 'pending' && !$vip->payment_proof)
             <div id="vip-pay-modal-{{ $vip->id }}" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-[#03050a]/90 backdrop-blur-md p-4 transition-opacity">
                 <div class="bg-[#0B1221] border border-[#1A233A] p-8 rounded-[32px] w-full max-w-md relative shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden">
@@ -335,6 +329,27 @@
             }
             reader.readAsDataURL(input.files[0]);
         }
+    }
+
+    function printReceiptSilent(url) {
+        // Buat elemen iframe rahasia
+        let printFrame = document.createElement('iframe');
+        printFrame.style.display = 'none';
+        printFrame.src = url;
+
+        // Tempelkan iframe ke dalam dashboard
+        document.body.appendChild(printFrame);
+
+        // Begitu file nota selesai di-load, langsung tembak jendela Print!
+        printFrame.onload = function() {
+            printFrame.contentWindow.focus();
+            printFrame.contentWindow.print();
+
+            // Bersihkan iframe setelah selesai (delay 2 detik) agar tidak berat
+            setTimeout(() => {
+                document.body.removeChild(printFrame);
+            }, 2000);
+        };
     }
 </script>
 @endsection

@@ -57,4 +57,23 @@ class BookingController extends Controller
 
         return back()->with('success', 'Transaksi #TRX-' . str_pad($booking->id, 4, '0', STR_PAD_LEFT) . ' berhasil dihapus permanen dari Radar!');
     }
+
+
+    // =====================================
+    // FUNGSI KHUSUS MANAJEMEN VIP
+    // =====================================
+    public function updateVipStatus(\Illuminate\Http\Request $request, $id)
+    {
+        $vip = \App\Models\PlanSubscription::findOrFail($id);
+        $vip->update(['status' => $request->status]);
+
+        return back()->with('success', 'Sistem Radar: Status VIP Player berhasil diupdate!');
+    }
+
+    public function destroyVip($id)
+    {
+        \App\Models\PlanSubscription::findOrFail($id)->delete();
+
+        return back()->with('success', 'Sistem Radar: Data VIP Player berhasil dihapus permanen!');
+    }
 }

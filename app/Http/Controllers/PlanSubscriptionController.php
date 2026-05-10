@@ -64,4 +64,21 @@ class PlanSubscriptionController extends Controller
 
         return back()->with('success', 'Pesanan paket VIP berhasil dibatalkan.');
     }
+
+    public function vipReceipt($id)
+{
+    $vip = \App\Models\PlanSubscription::with(['user', 'pricingPlan'])->findOrFail($id);
+
+    // Keamanan
+    if (auth()->user()->is_admin !== 1 && auth()->id() !== $vip->user_id) {
+        abort(403, 'Akses Ditolak.');
+    }
+
+    // Validasi
+    if (!in_array(strtolower($vip->status), ['active', 'completed'])) {
+        abort(404, 'Nota Belum Tersedia.');
+    }
+
+    return view('pages.vip-receipt', compact('vip'));
+}
 }
