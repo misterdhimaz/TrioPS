@@ -1,26 +1,26 @@
 <section id="pricing" class="py-[100px] bg-[#03050a] px-6 border-t border-white/5 relative z-20">
     <div class="max-w-[1200px] mx-auto">
 
-        <!-- Section Header -->
+
         <div class="flex flex-col items-center text-center mb-[70px]">
-            <!-- Badge -->
+
             <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#00e5ff]/30 bg-[#00e5ff]/5 mb-[20px] shadow-[0_0_15px_rgba(0,229,255,0.1)]">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
                 <span class="text-[#00e5ff] text-[10px] font-bold tracking-[2px] uppercase">Paket Harga</span>
             </div>
 
-            <!-- Title -->
+
             <h2 class="font-['Orbitron',_sans-serif] text-[36px] md:text-[46px] font-bold text-white mb-[15px] tracking-[1px]">
                 Harga Simpel & <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#00e5ff] to-[#0066ff]">Transparan</span>
             </h2>
 
-            <!-- Subtitle -->
+
             <p class="font-['Inter',_sans-serif] text-[#8A99B5] text-[14px] max-w-[500px] leading-[1.8]">
                 Tanpa biaya tersembunyi, tanpa kejutan. Bayar sesuai kebutuhan gaming Anda.
             </p>
         </div>
 
-        <!-- Pricing Grid -->
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-[30px] items-stretch">
 
             @forelse($pricing_plans ?? [] as $index => $plan)
@@ -34,7 +34,7 @@
                     $gradientClass = $themeIndex == 0 ? 'from-[#c084fc] to-[#8b5cf6]' : ($themeIndex == 1 ? 'from-[#00e5ff] to-[#0066ff]' : 'from-[#fbbf24] to-[#f59e0b]');
                 @endphp
 
-                <!-- Container Paket -->
+
                 <div class="bg-[#0B1221] border {{ $themeIndex == 1 ? 'border-[#00e5ff]/50' : 'border-white/5' }} rounded-[20px] p-[35px] hover:scale-105 transition-all duration-300 flex flex-col relative group">
 
                     @if($themeIndex == 1)
@@ -64,7 +64,7 @@
                         @endforeach
                     </ul>
 
-                    <!-- FORM PEMBELIAN VIP -->
+
                     @auth
                         <form action="{{ route('plan.subscriptions.store') }}" method="POST">
                             @csrf
@@ -96,7 +96,7 @@
 
         </div>
 
-        <!-- Footer Notes -->
+
         <div class="mt-[50px] flex items-center justify-center gap-[15px] text-[#6b7a90] text-[11px] flex-wrap">
             <span class="flex items-center gap-1">💳 Menerima pembayaran tunai & online</span>
             <span class="hidden md:inline">·</span>

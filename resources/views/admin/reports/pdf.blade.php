@@ -88,20 +88,22 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($bookings as $index => $booking)
-            <tr>
-                <td>{{ $index + 1 }}</td>
-                {{-- Menggunakan ?? sebagai fallback jika data User/Unit sudah dihapus --}}
-                <td>{{ $booking->user->name ?? 'User Tidak Ditemukan' }}</td>
-                <td>{{ $booking->playstation->name ?? 'Unit Telah Dihapus' }}</td>
-                <td>{{ $booking->created_at->format('d/m/Y | H:i') }}</td>
-                <td>Rp {{ number_format($booking->total_price, 0, ',', '.') }}</td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="5" style="text-align: center; padding: 30px;">Tidak ada data transaksi pada periode ini.</td>
-            </tr>
-            @endforelse
+
+           @foreach($bookings as $tx)
+           <tr>
+               <td>{{ $tx->id_transaksi }}</td>
+               <td>{{ $tx->nama_pelanggan }}</td>
+               <td>{{ $tx->detail_sewa }}</td>
+               <td>
+                   <span class="{{ $tx->tipe == 'VIP' ? 'text-purple-600 font-bold' : 'text-cyan-600 font-bold' }}">
+                       {{ $tx->tipe }}
+                   </span>
+               </td>
+               <td>{{ $tx->tanggal }}</td>
+               <td>Rp {{ number_format($tx->total_price, 0, ',', '.') }}</td>
+           </tr>
+           @endforeach
+
         </tbody>
         <tfoot>
             <tr class="total-row">

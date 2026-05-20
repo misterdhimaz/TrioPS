@@ -74,6 +74,18 @@
                 </a>
 
 
+                <a href="{{ route('admin.users.index') }}"
+   class="group flex items-center gap-3 px-4 py-3 rounded-xl transition-all {{ request()->routeIs('admin.users.*') ? 'bg-[#00e5ff]/10 text-[#00e5ff] border border-[#00e5ff]/30 shadow-[0_0_15px_rgba(0,229,255,0.1)]' : 'text-[#8A99B5] hover:bg-[#1A233A] hover:text-white' }}">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+        <circle cx="9" cy="7" r="4"></circle>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+    </svg>
+    <span class="font-bold text-[13px] tracking-[1px]">Data User</span>
+</a>
+
+
                             <a href="{{ route('admin.reports.index') }}" class="flex items-center gap-3 px-5 py-3 rounded-xl transition-all {{ request()->routeIs('admin.reports.index') ? 'bg-gradient-to-r from-[#00e5ff]/20 to-transparent text-[#00e5ff] border-l-2 border-[#00e5ff]' : 'text-[#8A99B5] hover:bg-[#1A233A] hover:text-white' }}">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
     <span class="font-bold text-[12px] tracking-[1px]">Laporan Keuangan</span>

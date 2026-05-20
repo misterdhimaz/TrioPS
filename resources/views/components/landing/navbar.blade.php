@@ -7,7 +7,7 @@
                 <div class="flex items-center justify-center drop-shadow-[0_0_15px_rgba(0,229,255,0.6)]">
     <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-20 h-20 object-contain">
 </div>
-                <!-- Logo Text -->
+                <!-- Lo1go Text -->
                 <div class="flex flex-col justify-center mt-0.5">
                     <div class="font-['Orbitron',_sans-serif] font-bold text-[24px] tracking-[1px] leading-none flex gap-2">
                         <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#00e5ff] to-[#0066ff]">TRIO.INFINITY</span>

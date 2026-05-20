@@ -14,48 +14,48 @@ class AutoUpdateBookingStatus
         // 1. Ambil waktu saat ini persis di zona waktu Indonesia (WIB)
         $now = Carbon::now('Asia/Jakarta');
 
-        // 2. Ambil SEMUA transaksi yang statusnya belum dibatalkan/selesai
-        $bookings = Booking::whereIn('status', ['Pending', 'pending', 'Approved', 'approved', 'Active', 'active'])->get();
+        // 2. Ambil transaksi yang berstatus pending atau active (Gunakan huruf kecil sesuai ENUM)
+        $bookings = Booking::whereIn('status', ['pending', 'active'])->get();
 
         foreach ($bookings as $b) {
-            // Ubah JSON array jam (misal: ["10:00", "11:00"]) menjadi Array PHP
+            // Ubah JSON array jam menjadi Array PHP
             $jamArray = is_string($b->start_time) ? json_decode($b->start_time, true) : $b->start_time;
 
-            // Lewati jika data jam rusak atau kosong
             if (!$jamArray || !is_array($jamArray)) continue;
 
             $jamMulai = $jamArray[0];
-            $durasi = $b->duration ?? count($jamArray);
+            // Pastikan menggunakan nama kolom yang sesuai di database: duration_hours
+            $durasi = $b->duration_hours ?? count($jamArray);
 
-            // ==========================================
-            // PERBAIKAN BUG WAKTU DI SINI
-            // ==========================================
-            // Ambil tanggalnya saja (Y-m-d) membuang 00:00:00 bawaan database
             $tanggalSaja = Carbon::parse($b->booking_date)->toDateString();
 
-            // Rangkai tanggal bersih dan jam menjadi format waktu utuh
+            // Rangkai waktu mulai dan selesai secara presisi
             $waktuMulai = Carbon::parse($tanggalSaja . ' ' . $jamMulai, 'Asia/Jakarta');
             $waktuSelesai = $waktuMulai->copy()->addHours($durasi);
 
             $currentStatus = strtolower($b->status);
 
             // ==========================================
-            // LOGIKA OTOMATISASI STATUS
+            // LOGIKA OTOMATISASI STATUS (REVISI)
             // ==========================================
 
-            // KONDISI 1: Jika waktu sekarang sudah MELEWATI jam selesai -> Selesai
+            // KONDISI 1: Jika waktu sekarang sudah MELEWATI jam selesai -> Otomatis selesai (completed)
             if ($now->greaterThanOrEqualTo($waktuSelesai)) {
-                $b->update(['status' => 'Completed']);
+                $b->update(['status' => 'completed']);
             }
-            // KONDISI 2: Jika sudah di-ACC (Approved) & masuk jam mulai -> Active (Sedang Main)
-            elseif ($now->greaterThanOrEqualTo($waktuMulai) && in_array($currentStatus, ['approved', 'active'])) {
-                if ($currentStatus !== 'active') {
-                    $b->update(['status' => 'Active']);
+
+            // KONDISI 2: Jika jam main sudah masuk, tapi statusnya MASIH 'pending' (belum bayar/belum di-ACC)
+            // JANGAN diubah ke active! Biarkan tetap 'pending' agar user bisa upload bukti transfer.
+
+            // KONDISI 3: Jika sudah masuk jam mulai DAN statusnya memang sudah 'active' (sudah di-ACC Admin)
+            elseif ($now->greaterThanOrEqualTo($waktuMulai) && $currentStatus === 'active') {
+                // Pertahankan status tetap active huruf kecil sesuai ENUM
+                if ($b->status !== 'active') {
+                    $b->update(['status' => 'active']);
                 }
             }
         }
 
-        // Lanjutkan perjalanan loading halaman
         return $next($request);
     }
 }

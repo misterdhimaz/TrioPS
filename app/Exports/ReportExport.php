@@ -10,65 +10,65 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Events\AfterSheet;
 
-class ReportExport implements FromCollection, WithHeadings, WithMapping, WithColumnFormatting, ShouldAutoSize, WithStyles
+class ReportExport implements FromCollection, WithHeadings, WithMapping, WithColumnFormatting, ShouldAutoSize, WithStyles, WithEvents
 {
-    protected $bookings;
+    protected $transactions;
     protected $rowNumber = 0;
 
-    /**
-     * Menangkap data bookings yang sudah difilter dari Controller
-     */
-    public function __construct($bookings)
+    public function __construct($transactions)
     {
-        $this->bookings = $bookings;
+        $this->transactions = $transactions;
     }
 
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     public function collection()
     {
-        return $this->bookings;
+        return $this->transactions;
     }
 
     /**
-     * Menentukan header kolom di Excel
+     * Header Tabel Excel
      */
     public function headings(): array
     {
         return [
             'NO',
-            'ID BOOKING',
+            'ID TRANSAKSI',
             'NAMA PELANGGAN',
-            'UNIT PLAYSTATION',
+            'DETAIL SEWA / PAKET',
+            'TIPE',
             'TANGGAL TRANSAKSI',
-            'STATUS',
             'TOTAL PEMBAYARAN'
         ];
     }
 
     /**
-     * Memetakan data dari model ke kolom Excel
-     * Ditambahkan proteksi ?? (null coalescing) agar tidak error jika data dihapus
+     * Mapping data ke baris Excel
      */
-    public function map($booking): array
+    public function map($tx): array
     {
         $this->rowNumber++;
 
         return [
             $this->rowNumber,
-            $booking->id,
-            $booking->user->name ?? 'User Tidak Ditemukan',
-            $booking->playstation->name ?? 'Unit Telah Dihapus',
-            $booking->created_at->format('d/m/Y H:i'),
-            $booking->status,
-            $booking->total_price,
+            $tx->id_transaksi,
+            $tx->nama_pelanggan,
+            $tx->detail_sewa,
+            $tx->tipe,
+            $tx->tanggal,
+            $tx->total_price,
         ];
     }
 
     /**
-     * Mengatur format kolom (Kolom G untuk Total Pembayaran diformat Rupiah)
+     * Format Kolom G menjadi Rupiah
      */
     public function columnFormats(): array
     {
@@ -78,19 +78,59 @@ class ReportExport implements FromCollection, WithHeadings, WithMapping, WithCol
     }
 
     /**
-     * Memberikan styling pada sheet Excel
+     * Memberikan styling pada header tabel utama
      */
     public function styles(Worksheet $sheet)
     {
         return [
-            // Baris 1 (Header) dibuat Bold dengan background hijau emerald
             1 => [
                 'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
                 'fill' => [
-                    'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                    'startColor' => ['rgb' => '10B981']
+                    'fillType' => Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => '10B981'] // Hijau Emerald
                 ],
             ],
+        ];
+    }
+
+    /**
+     * Manipulasi Ekstra Setelah Data Selesai Dirender (Tambah Total & Kunci Sheet)
+     */
+    public function registerEvents(): array
+    {
+        return [
+            AfterSheet::class => function(AfterSheet $event) {
+                // 1. Hitung Total Keseluruhan Pendapatan
+                $totalKeseluruhan = $this->transactions->sum('total_price');
+
+                // 2. Cari tahu baris mana yang kosong di paling bawah
+                $barisTotal = $this->rowNumber + 2; // +1 untuk header, +1 untuk baris baru setelah data
+
+                // 3. Tulis teks "TOTAL PENDAPATAN" dan nominalnya
+                $event->sheet->setCellValue('A' . $barisTotal, 'TOTAL PENDAPATAN BERSIH:');
+                $event->sheet->setCellValue('G' . $barisTotal, $totalKeseluruhan);
+
+                // 4. Gabungkan (Merge) Cell A sampai F untuk tulisan total
+                $event->sheet->mergeCells('A' . $barisTotal . ':F' . $barisTotal);
+
+                // 5. Rata kanan (Align Right) untuk tulisan total agar menempel dengan angka
+                $event->sheet->getStyle('A' . $barisTotal)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+
+                // 6. Beri Styling (Warna & Font Tebal) pada baris Total agar terlihat mencolok
+                $event->sheet->getStyle('A' . $barisTotal . ':G' . $barisTotal)->applyFromArray([
+                    'font' => [
+                        'bold' => true,
+                        'color' => ['rgb' => 'FFFFFF']
+                    ],
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['rgb' => '0F172A'] // Warna dark/slate sesuai tema sistem Anda
+                    ],
+                ]);
+
+                // 7. Kunci Sheet agar tidak bisa diedit secara sepihak
+                $event->sheet->getDelegate()->getProtection()->setSheet(true);
+            },
         ];
     }
 }

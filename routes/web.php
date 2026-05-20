@@ -136,7 +136,12 @@ Route::middleware(['auth', 'admin', \App\Http\Middleware\AutoUpdateBookingStatus
     // Manajemen Status & Hapus VIP (Untuk Dashboard Admin)
     Route::patch('/vip-subscriptions/{id}/status', [App\Http\Controllers\Admin\BookingController::class, 'updateVipStatus'])->name('admin.vip.status');
     Route::delete('/vip-subscriptions/{id}', [App\Http\Controllers\Admin\BookingController::class, 'destroyVip'])->name('admin.vip.destroy');
-});
+
+    // Manajemen Pelanggan
+Route::get('/users', [App\Http\Controllers\Admin\UserController::class, 'index'])->name('admin.users.index');
+Route::delete('/users/{id}', [App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('admin.users.destroy');
+
+    });
 
 // 4. AUTHENTICATION ROUTES (Login, Register, dsb)
 require __DIR__.'/auth.php';

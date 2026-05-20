@@ -75,14 +75,15 @@ class BookingController extends Controller
         }
 
         // 5. Injeksi ke Database
+        // 5. Injeksi ke Database (Gunakan huruf kecil 'pending')
         Booking::create([
             'user_id'        => Auth::id(),
             'playstation_id' => $request->product_id,
             'booking_date'   => $request->booking_date,
-            'start_time'     => $request->selected_times, // Tetap gunakan format JSON string
+            'start_time'     => $request->selected_times,
             'duration_hours' => $duration,
             'total_price'    => $totalPrice,
-            'status'         => 'Pending',
+            'status'         => 'pending', // <-- DIUBAH MENJADI HURUF KECIL
         ]);
 
         return redirect()->route('dashboard')->with('booking_success', 'Booking berhasil diamankan! Silakan upload bukti pembayaran.');
